@@ -15,8 +15,8 @@ USAGE:
   Matching is achived in two steps:
   1.   Compile the regexp into internal program representation of it by using compile,
   
-        char *cp = compile("abc.*$", 0, 0);
-        
+        char * cp = compile("abc. *$", 0, 0);
+         
         cp becomes the compiled version of the regexp we want to match
         
   2.    Actually, find the match:
