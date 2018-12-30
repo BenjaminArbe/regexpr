@@ -1,8 +1,8 @@
-REGULAR EXPRESSION LIBRARY
+##**REGULAR EXPRESSION LIBRARY**
 
-NAME:  libgen.a
+**NAME:**  libgen.a
 
-USAGE:
+**USAGE:**
 
   Insert the line below in order to use the functions defined in the library
   
