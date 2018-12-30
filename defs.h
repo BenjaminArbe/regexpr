@@ -5,7 +5,7 @@
 #define _DEFS_H
 #include <stdbool.h>
 #define ESIZE	512		// Buffer size used by malloc
-#define NBRA	9
+#define NCBRA	9
  
 extern bool bcf;		// Used to detect ^
  

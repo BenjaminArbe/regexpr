@@ -12,6 +12,15 @@ extern "C" {
 
 bool bcf;
 
+static char *ep;
+static char *sp;
+static char cbracket[NCBRA];
+static int ncbra;
+static char *cbracketp;
+
+
+static int compile_groups(int c);
+
 char *
 compile ( const char *instring, char *expbuf, char *endbuf) {
 	check ( instring, "instring is invalid (NULL)");
@@ -27,11 +36,11 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 	}
 
 	int c;
-	char *sp = (char *)instring;
-	char *ep = expbuf;
+	sp = (char *)instring;
+	ep = expbuf;
 	char *lastep = 0;
-	char bracket[NBRA];
-	char *bracketp = &bracket[0];
+	nbra = 0;
+	cbracketp = &cbracket[0];
 
 	if ( *sp == '\0' ) {
 		if ( inUseMalloc && expbuf )
@@ -82,6 +91,18 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 				*ep++ = CDOL;	
 				continue;
 			
+			// '\' allows the use of especial chars[*.$]
+			// as normal chars. Exceptions are ( ) and \1,
+			// \2, ... (groups of RegExps as substrings)
+			case '\\':	
+				c = *sp++;
+				int ret = compile_groups(c);
+				if ( ret == 1 ) continue;
+				else if ( ret == -1 ) goto error;
+				*ep++ = CCHR;
+				*ep++ = c;
+				continue;
+			
 defchar:
 			default:
 				*ep++ = CCHR;
@@ -93,4 +114,48 @@ defchar:
 
 error:
 	return 0;
+}
+
+/* Function: compile_groups
+ *   Do processing for REGEXP groups
+ *	
+ * input: processing char one past the '\'
+ * returns:
+ *		1 found a (, ), or 1, 2, ... NBRA
+ *		0 allow normal char processing no errors
+ *		-1 found an error, specified by regerrno 
+ */
+static int
+compile_groups(int c) {
+	switch (c) {
+		case '(':
+			if ( ncbra >= NCBRA ) {
+				regerrno = 43;	// Too many \(
+				reglength = 0;
+				return -1;
+			}
+			*cbracketp++ = ncbra;
+			*ep++ = CBRA;
+			*ep++ = ncbra++;
+			return 1;
+
+		case ')':
+			if ( cbracketp <= cbracket ) {
+				regerrno = 42;	// Unmatched \)
+				reglength = 0;
+				return -1;
+			}
+			*ep++ = CKET;
+			*ep++ = *--cbracketp;
+			return 1;
+		
+		case '1': case '2' : case '3' : case '4' :
+		case '5': case '6': case '7': case '8': case '9':
+			*ep++ = CBACK;
+			*ep++ = c - '1';
+			return 1;
+		
+		default:
+			return 0;
+	}
 }
