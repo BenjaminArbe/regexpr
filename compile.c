@@ -11,11 +11,11 @@ extern "C" {
 #endif
 
 bool bcf;
+int ncbra;
 
 static char *ep;
 static char *sp;
 static char cbracket[NCBRA];
-static int ncbra;
 static char *cbracketp;
 
 
@@ -39,7 +39,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 	sp = (char *)instring;
 	ep = expbuf;
 	char *lastep = 0;
-	nbra = 0;
+	ncbra = 0;
 	cbracketp = &cbracket[0];
 
 	if ( *sp == '\0' ) {
@@ -55,6 +55,13 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 	while (true) {
 		// sucessful terminating condition:
 		if ( (c = *sp++) == '\0' ) {
+			// Before we quit, check cbracket balance
+			if ( cbracketp != cbracket ) {
+				regerrno = 42;
+				reglength = 0;
+				return 0;
+			}
+			// Now the setup to quit
 			*ep++ = CEOF;
 			*ep = 0;
 			reglength = ep - expbuf;
@@ -140,6 +147,7 @@ compile_groups(int c) {
 			return 1;
 
 		case ')':
+			// This block takes care of right unbalance
 			if ( cbracketp <= cbracket ) {
 				regerrno = 42;	// Unmatched \)
 				reglength = 0;

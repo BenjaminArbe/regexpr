@@ -8,7 +8,7 @@ extern "C" {
  * External variables:
  * See man page for usage
  */
-extern int nbra, regerrno, reglength;
+extern int ncbra, regerrno, reglength;
 extern char *loc1, *loc2, *locs;
 
 int step(const char *string, const char *expbuf);
