@@ -15,6 +15,7 @@
  */
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "regexpr.h"
 #include "defs.h"
 
@@ -22,11 +23,19 @@
 extern "C" {
 #endif
 
+char *loc1;
+char *braslist[NCBRA];
+char *braelist[NCBRA];
+
 int
 step(const char *string, const char *expbuf) {
 	char c;
 	char *p1 = (char *)string;
 	char *p2 = (char *)expbuf;
+	loc1 = 0;
+	
+	memset(braslist, 0, sizeof(braslist));
+	memset(braelist, 0, sizeof(braelist));
 	
 	if (bcf) {
 		//printf("executing...\n");

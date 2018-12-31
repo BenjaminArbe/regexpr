@@ -23,12 +23,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+char *loc2, *locs;
  
 int
 advance(const char *string, const char *expbuf) {
 	char *lp = (char *)string;
 	char *ep = (char *)expbuf;
 	char *curlp;
+	loc2 = 0; locs = 0;
 
 	while (true)  {
 		switch ( *ep++ ) {
@@ -46,6 +49,12 @@ advance(const char *string, const char *expbuf) {
 			case CEOF:
 				loc2 = lp;
 				return 1;
+			case CBRA:
+				braslist[(int)*ep++] = lp;
+				continue;
+			case CKET:
+				braelist[(int)*ep++] = lp;
+				continue;
 			
 			case CDOT|CSTAR:
 				curlp = lp;

@@ -12,6 +12,7 @@ extern "C" {
 
 bool bcf;
 int ncbra;
+int reglength, regerrno;
 
 static char *ep;
 static char *sp;
@@ -41,6 +42,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 	char *lastep = 0;
 	ncbra = 0;
 	cbracketp = &cbracket[0];
+	regerrno = reglength = 0;
 
 	if ( *sp == '\0' ) {
 		if ( inUseMalloc && expbuf )

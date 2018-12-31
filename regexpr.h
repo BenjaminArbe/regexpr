@@ -10,6 +10,7 @@ extern "C" {
  */
 extern int ncbra, regerrno, reglength;
 extern char *loc1, *loc2, *locs;
+extern char *braslist[], *braelist[];
 
 int step(const char *string, const char *expbuf);
 int advance(const char *string, const char *expbuf);
