@@ -5,8 +5,6 @@
 
 char instring[10];
 char expbuf[20];
-int nbra, regerrno, reglength;
-char *loc1, *loc2, *locs;
 
 typedef struct {
 	char tok;

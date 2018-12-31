@@ -1,10 +1,7 @@
 #include <regexpr.h>
 #include <string.h>
-#include <defs.h>
 #include "minunit.h"
 
-int nbra, regerrno, reglength;
-char *loc1, *loc2, *locs;
 
 char *
 step_bcf() {

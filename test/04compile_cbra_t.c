@@ -1,6 +1,5 @@
 #include <regexpr.h>
 #include <string.h>
-
 #include <defs.h>
 #include "minunit.h"
 

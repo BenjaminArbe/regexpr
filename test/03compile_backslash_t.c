@@ -3,8 +3,6 @@
 #include <defs.h>
 #include "minunit.h"
 
-int regerrno, reglength, nbra;
-
 typedef struct {
 	char tok;
 	char ch;
