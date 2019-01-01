@@ -43,13 +43,13 @@ compile_malloc_use() {
 	char *p = compile(instring, 0, 0);
 	mu_assert( p != 0, "RE is larger than ESIZE=512");
 	mu_assert( regerrno == 0, "improper value for regerrno");
-	free (p);
 	
 	char *regstr = (char *) malloc(ESIZE+5);
 	memset(regstr, 'a', ESIZE+5);
 	p = compile(regstr, 0, 0);
 	mu_assert( p == 0, "RE is smaller than ESIZE");
 	mu_assert( regerrno == 50, "regerrno isn't properly set");
+	if (p) free(p);
 	return 0;
 }
 

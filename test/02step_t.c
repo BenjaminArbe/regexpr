@@ -31,7 +31,7 @@ step_bcf1()  {
 	ret = step(s2, cp);
 	mu_assert( ret == 1, "incorrect unmatch");
 	mu_assert( strncmp(loc1, s2, loc2-loc1) == 0, "loc1 pointing wrong match");
-	
+	if (cp) free(cp);
 	return 0;
 }
 

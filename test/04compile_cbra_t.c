@@ -74,6 +74,7 @@ compile_cbra_left_unbalanced() {
 	mu_assert(p == 0, "Failure compiling RE");
 	mu_assert(regerrno == 42, "incorrect regerrno value");
 	
+	if (p) free(p);
 	return 0;
 }
 
@@ -83,7 +84,7 @@ compile_cbra_right_unbalanced() {
 	char *p = compile(re, 0, 0);
 	mu_assert(p == 0, "Failure compiling RE");
 	mu_assert(regerrno == 42, "incorrect regerrno value");
-	
+	if (p) free(p);
 	return 0;
 }
 
@@ -93,7 +94,7 @@ compile_cbra_too_many() {
 	char *p = compile(re, 0, 0);
 	mu_assert(p == 0, "Failure compiling RE");
 	mu_assert(regerrno == 43, "incorrect regerrno value");
-	
+	if (p) free(p);
 	return 0;
 }
 
