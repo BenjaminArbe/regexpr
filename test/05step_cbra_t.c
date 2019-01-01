@@ -30,7 +30,7 @@ step_cbra_multiple() {
 	mu_assert(*braelist[2] == 'D', "Incorrect ending match substring 2");
 	mu_assert(*loc1 == 'A', "Incorrect starting match");
 	mu_assert(*loc2 == 'w', "Incorrect ending match");
-	
+	if (p) free(p);
 	return 0;
 }
 

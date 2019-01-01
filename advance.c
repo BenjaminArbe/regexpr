@@ -17,6 +17,7 @@
  * If fails to find a match returns 0
  */
 #include <stdbool.h>
+#include <string.h>
 #include "regexpr.h"
 #include "defs.h"
 
@@ -55,6 +56,16 @@ advance(const char *string, const char *expbuf) {
 			case CKET:
 				braelist[(int)*ep++] = lp;
 				continue;
+			case CBACK: {
+				char *sp = braslist[(int)*ep];
+				int count = braelist[(int)*ep++] - sp;
+				if ( strncmp(sp, lp, count) == 0 ) {
+					lp += count;
+					continue;
+				}
+				return 0;
+			}
+				
 			
 			case CDOT|CSTAR:
 				curlp = lp;
