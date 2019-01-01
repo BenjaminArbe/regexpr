@@ -25,7 +25,7 @@ test:	$(TST)
 valgrind:
 	#VALGRIND="valgrind --log-file=/tmp/valgrind-%p.log" $(MAKE)
 	rm -rf /tmp/valgrind-*
-	VALGRIND=`valgrind --log-file=/tmp/valgrind-%p.log $(MAKE)`
+	VALGRIND=`valgrind --leak-check=full --log-file=/tmp/valgrind-%p.log $(MAKE)`
 
 clean:
 	rm -rf *.a *.o
