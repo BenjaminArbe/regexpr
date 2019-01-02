@@ -90,6 +90,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 			case '.':	*ep++ = CDOT; continue;
 			
 			case '*':	
+				// * after ( or ) considered normal char
 				if ( lastep == 0 || *lastep == CBRA || *lastep == CKET )
 					goto defchar;
 				*lastep |= CSTAR;

@@ -65,7 +65,18 @@ advance(const char *string, const char *expbuf) {
 				}
 				return 0;
 			}
-				
+			
+			case CBACK|CSTAR: {
+				char *sp = braslist[(int)*ep];
+				int count = braelist[(int)*ep++] - sp;
+				curlp = lp; 
+				while ( strncmp(sp, lp, count) == 0 ) lp += count;
+				while ( lp >= curlp ) { // back up and try to match again
+					if ( advance(lp, ep) ) return 1;
+					lp -= count;
+				}
+				return 0;
+			}
 			
 			case CDOT|CSTAR:
 				curlp = lp;
