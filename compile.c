@@ -58,6 +58,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 		// sucessful terminating condition:
 		if ( (c = *sp++) == '\0' ) {
 			// Before we quit, check cbracket balance
+			// This block also takes care of the left unbalance
 			if ( cbracketp != cbracket ) {
 				regerrno = 42;
 				reglength = 0;
