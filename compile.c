@@ -20,7 +20,8 @@ static char cbracket[NCBRA];
 static char *cbracketp;
 
 
-static int compile_groups(int c);
+static int compile_groups(int);
+static int compile_char_class(char *);
 
 char *
 compile ( const char *instring, char *expbuf, char *endbuf) {
@@ -77,6 +78,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 		
 		// Buffer overflow check:
 		if ( ep >= endbuf ) {
+			reglength = 0;
 			regerrno = 50;
 			if ( inUseMalloc && expbuf ) 
 				free (expbuf);
@@ -105,7 +107,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 			// '\' allows the use of especial chars[*.$]
 			// as normal chars. Exceptions are ( ) and \1,
 			// \2, ... (groups of RegExps as substrings)
-			case '\\':	
+			case '\\':	{
 				c = *sp++;
 				int ret = compile_groups(c);
 				if ( ret == 1 ) continue;
@@ -113,6 +115,17 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 				*ep++ = CCHR;
 				*ep++ = c;
 				continue;
+			}
+			
+			case '[': {
+				int ret = compile_char_class(endbuf);
+				if ( ret == 1 ) continue;
+				regerrno = 11; // Range endpoint too large
+				reglength = 0;
+				if ( inUseMalloc && expbuf ) 
+					free (expbuf);
+				goto error;
+			}
 			
 defchar:
 			default:
@@ -125,6 +138,57 @@ defchar:
 
 error:
 	return 0;
+}
+
+/* Function: compile_char_class
+ * 	Do processing of character class groups
+ *
+ * returns:
+ * 	1 means successfully compiled so ready to continue 
+ *			compilation
+ * 	0 fail to compile due a syntax error or buffer overrun
+ */
+static int
+compile_char_class(char *ebuf) {
+	*ep++ = CCL;
+	*ep++ = 0;	
+	int count = 1;
+	char c = *sp++;
+	if ( c == '^' ) { c = *sp++; ep[-2] = NCCL; }
+	do {
+		if ( c == '\0' ) { // Missing ]
+			regerrno = 49; reglength = 0; return 0;
+		}
+		
+		// If '-' is not the first char in the class:
+		// ep[-1] is 0 if ep is at the 1st char after [ or [^
+		// ep[-1] is the char before the '-' otherwise.
+		if ( c == '-' && ep[-1] != 0 ) {
+			// If ] comes right after '-' then consider '-'
+			// as normal char too;
+			if ( (c = *sp++) == ']' ) {
+				*ep++ = '-';
+				count++;
+				break;
+			}
+			// So we're dealing with a range:
+			// copy all chars in the range
+			while ( ep[-1] < c ) {
+				*ep = ep[-1] + 1;
+				ep++; count++;
+				// Check for buffer overflow:
+				if ( ep >= ebuf ) return 0;
+			}
+		}
+		// Here is the normal char processing or 
+		// If '-' is the 1st char in the class consider it normal char
+		*ep++ = c;
+		count++;
+		// Check for buffer overflow:
+		if ( ep >= ebuf ) return 0;
+		
+	} while ( (c = *sp++) != ']');
+	return 1;
 }
 
 /* Function: compile_groups
