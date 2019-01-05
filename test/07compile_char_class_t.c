@@ -25,9 +25,9 @@ compile_normal_cc() {
 	char re[] = "abd[-*.abcjz]";
 	char *p = compile(re, 0, 0);
 	mu_assert(p != 0, "Failure compiling RE");
-	cchar_t *pc = p; int i;
+	cchar_t *pc = (cchar_t *)p; int i;
 	for (i = 0; pc->tok == CCHR; pc++, i++) ;
-	char *ptr = pc;
+	char *ptr = (char *)pc;
 	mu_assert(*ptr++ == CCL, "Incorrect token found");
 	mu_assert(*ptr++ == 8, "Incorrect number of chars in class");
 	i++;
@@ -42,9 +42,9 @@ compile_normal_neg_cc() {
 	char re[] = "abd[^-*.abcjz]";
 	char *p = compile(re, 0, 0);
 	mu_assert(p != 0, "Failure compiling RE");
-	cchar_t *pc = p; int i;
+	cchar_t *pc = (cchar_t *)p; int i;
 	for (i = 0; pc->tok == CCHR; pc++, i++) ;
-	char *ptr = pc;
+	char *ptr = (char *)pc;
 	mu_assert(*ptr++ == NCCL, "Incorrect token found");
 	mu_assert(*ptr++ == 8, "Incorrect number of chars in class");
 	i++;i++;
