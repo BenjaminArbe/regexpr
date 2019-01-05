@@ -3,7 +3,6 @@
 #include <defs.h>
 #include "minunit.h"
 
-int regerrno, reglength, ncbra;
 
 typedef struct {
 	char tok;
@@ -115,6 +114,16 @@ compile_bslash_number() {
 }
 
 char *
+compile_bslash_number_0 () {
+	char re[] = "\\0";
+	char *p = compile(re, 0, 0);
+	mu_assert(p == 0, "Failure compiling RE");
+	mu_assert(regerrno == 25, "Digit out of range");
+	if (p) free(p);
+	return 0;
+}
+
+char *
 all_tests() {
 	mu_suite_start();
 	
@@ -124,6 +133,7 @@ all_tests() {
 	mu_run_test(compile_cbra_right_unbalanced);
 	mu_run_test(compile_cbra_too_many);
 	mu_run_test(compile_bslash_number);
+	mu_run_test(compile_bslash_number_0);
 	
 	return 0;
 }
