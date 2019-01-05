@@ -26,6 +26,7 @@ extern "C" {
 #endif
 
 char *loc2, *locs;
+static bool stringchr(char *s, char c);
  
 int
 advance(const char *string, const char *expbuf) {
@@ -65,6 +66,12 @@ advance(const char *string, const char *expbuf) {
 				}
 				return 0;
 			}
+			case CCL:
+				if ( stringchr(ep, *lp++) ) { ep += *ep; continue; }
+				else return 0;
+			case NCCL:
+				if ( ! stringchr(ep, *lp++) ) { ep += *ep; continue; }
+				else return 0;
 			
 			case CBACK|CSTAR: {
 				char *sp = braslist[(int)*ep];
@@ -112,6 +119,15 @@ star:
 	} // end of while
 	
 } // end of advance
+
+static bool
+stringchr(char *s, char c) {
+	size_t len = (size_t)*s++;
+	while (len--) 
+		if ( *s++ == c ) return true;
+	return false;
+}
+
 
 #ifdef __cplusplus
 }
