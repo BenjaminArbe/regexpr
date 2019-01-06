@@ -67,12 +67,22 @@ advance(const char *string, const char *expbuf) {
 				return 0;
 			}
 			case CCL:
-				if ( stringchr(ep, *lp++) ) { ep += *ep; continue; }
+				if ( stringchr(ep, *lp++) ) { ep += *ep+1; continue; }
 				else return 0;
 			case NCCL:
-				if ( ! stringchr(ep, *lp++) ) { ep += *ep; continue; }
+				if ( ! stringchr(ep, *lp++) ) { ep += *ep+1; continue; }
 				else return 0;
 			
+			case CCL|CSTAR:
+				curlp = lp;
+				while ( stringchr(ep, *lp++) ) ;
+				ep += *ep+1;
+				goto star;
+			case NCCL|CSTAR:
+				curlp = lp;
+				while ( ! stringchr(ep, *lp++) ) ;
+				ep += *ep+1;
+				goto star;
 			case CBACK|CSTAR: {
 				char *sp = braslist[(int)*ep];
 				int count = braelist[(int)*ep++] - sp;
@@ -84,7 +94,6 @@ advance(const char *string, const char *expbuf) {
 				}
 				return 0;
 			}
-			
 			case CDOT|CSTAR:
 				curlp = lp;
 				while ( *lp++ )
