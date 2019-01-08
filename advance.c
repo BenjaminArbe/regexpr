@@ -31,6 +31,7 @@ static bool stringchr(char *s, char c);
 int
 advance(const char *string, const char *expbuf) {
 	char *lp = (char *)string;
+	char *lpmax = lp + strlen(lp);
 	char *ep = (char *)expbuf;
 	char *curlp;
 	loc2 = 0; locs = 0;
@@ -49,6 +50,7 @@ advance(const char *string, const char *expbuf) {
 				if ( *lp == '\0' ) continue;
 				return 0;
 			case CEOF:
+				if ( lp > lpmax ) return 0;
 				loc2 = lp;
 				return 1;
 			case CBRA:
@@ -131,6 +133,7 @@ star:
 
 static bool
 stringchr(char *s, char c) {
+	if ( c == '\0' ) return true;
 	size_t len = (size_t)*s++;
 	while (len--) 
 		if ( *s++ == c ) return true;

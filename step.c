@@ -29,6 +29,7 @@ char *braelist[NCBRA];
 
 int
 step(const char *string, const char *expbuf) {
+	if ( string == NULL || *string == '\0' ) return 0;
 	char c;
 	char *p1 = (char *)string;
 	char *p2 = (char *)expbuf;
@@ -66,6 +67,7 @@ step(const char *string, const char *expbuf) {
 			return 1;
 		}
 	} while ( *p1++ );
+	
 	return 0;
 }
 

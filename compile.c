@@ -107,6 +107,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 				if ( ret == 1 ) continue;
 				else if ( ret == -1 ) goto error;
 			}
+			break;
 			
 defchar:
 			default:

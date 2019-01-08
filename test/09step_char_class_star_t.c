@@ -92,46 +92,66 @@ step_cc_range_neg_star() {
 	int r = step(s, p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"0",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '1', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2, p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"1",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '1', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"1",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '0', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"0444",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '2', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"2",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '2', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"2",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '2', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"2vvvut",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '1', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"14",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '3', "wrong loc2 value");
 	locs = loc2;
 	r = step(loc2,p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(strncmp(loc1,"367@#",loc2-loc1)==0, "wrong match");
-	//locs = loc2;
-	//printf("%c\n", *loc2);
-	//r = step(loc2,p);
-	//mu_assert(r == 1, "Failure matching RE");
-	//printf("%c\n", *loc2);
-	printf("%d, %d\n", strlen(s), loc2-s);
-	printf("%c\n", s[strlen(s)]);
-	printf("%c\n", *(loc2-1));
+	mu_assert(*loc2 == '\0', "wrong loc2 value");
+	
+	locs = loc2;
+	r = step(loc2,p);
+	mu_assert(r == 0, "Failure matching RE");
+	
+	if (p) free(p);
+	return 0;
+}
+
+char *
+step_cc_special() {
+	char *p = compile("[0-3][^0-3][^0-3][^0-3][^0-3]", 0, 0);
+	mu_assert( p!=0, "Failure compiling RE");
+	char s[] = "abctuv367@#";
+	int r = step(s, p);
+	mu_assert(r == 1, "Failure matching RE");
+	mu_assert(strncmp(loc1,"367@#",loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == '\0', "wrong loc2 value");
+	
 	if (p) free(p);
 	return 0;
 }
@@ -144,6 +164,7 @@ all_tests() {
 	mu_run_test(step_cc_normal_neg_star);
 	mu_run_test(step_cc_range_star);
 	mu_run_test(step_cc_range_neg_star);
+	mu_run_test(step_cc_special);
 	
 	return 0;
 }
