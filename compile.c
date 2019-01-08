@@ -70,13 +70,15 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 		// Buffer overflow check:
 		if ( ep >= endbuf ) { regerrno = 50; goto error; }
 		
-		// Remember ep if not a RE *
+		// Here is where we remember 'char tokens' and separate
+		// from repetition operators:
 		if ( c != '*' ) lastep = ep;
 		
 		switch (c) {
 			case '.':	*ep++ = CDOT; continue;
 			
 			case '*':	
+				// If * is 1st char in REGEXP then it is a normal char
 				// * after ( or ) considered normal char
 				if ( lastep == 0 || *lastep == CBRA || *lastep == CKET )
 					goto defchar;
