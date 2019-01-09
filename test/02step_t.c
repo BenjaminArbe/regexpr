@@ -81,6 +81,20 @@ step_dollar() {
 }
 
 char *
+step_star_as_1st_char() {
+	char *p = compile("*ab12", 0, 0);
+	mu_assert(p != 0, "Failure compiling RE");
+	char s[] = "*xy1209rab12kkk*ab12mnpq";
+	int r = step(s, p);
+	mu_assert(r == 1, "Failure compiling RE");
+	mu_assert(strncmp(loc1, "*ab12", loc2-loc1)==0, "wrong match");
+	mu_assert(*loc2 == 'm', "wrong loc2 value");
+	
+	if (p) free(p);
+	return 0;
+}
+
+char *
 step_multiple_star() {
 	char regexp[] = "a*12b*34*c";
 	char *cp = compile(regexp, 0, 0);
@@ -150,6 +164,7 @@ all_tests() {
 	mu_run_test(step_char_match);
 	mu_run_test(step_dot_match);
 	mu_run_test(step_dollar);
+	mu_run_test(step_star_as_1st_char);
 	mu_run_test(step_multiple_star);
 	mu_run_test(step_successive_matches);
 	mu_run_test(step_successive_matches_star);

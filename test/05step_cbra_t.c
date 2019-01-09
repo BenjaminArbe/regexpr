@@ -35,11 +35,42 @@ step_cbra_multiple() {
 }
 
 char *
+step_cbra_star_as_1st_char() {
+	char *p = compile("\\(*abc\\)", 0, 0);
+	mu_assert(p != 0, "Failure compling RE");
+	char s[] = "qwert*abcxyz";
+	int r = step(s, p);
+	mu_assert(r == 1, "Failure matching RE");
+	mu_assert(*braslist[0] == '*', "wrong starting substring");
+	mu_assert(*braelist[0] == 'x', "wrong ending substring");
+	
+	if (p) free(p);
+	return 0;
+}
+
+char *
+step_cket_followed_by_star() {
+	char *p = compile("\\(abc\\)*", 0, 0);
+	mu_assert(p != 0, "Failure compling RE");
+	char s[] = "qwert*abc*xyz";
+	int r = step(s, p);
+	mu_assert(r == 1, "Failure matching RE");
+	mu_assert(*braslist[0] == 'a', "wrong starting substring");
+	mu_assert(*braelist[0] == '*', "wrong ending substring");
+	
+	if (p) free(p);
+	return 0;
+}
+
+
+char *
 all_tests() {
 	mu_suite_start();
 	
 	mu_run_test(step_cbra);
 	mu_run_test(step_cbra_multiple);
+	mu_run_test(step_cbra_star_as_1st_char);
+	mu_run_test(step_cket_followed_by_star);
 	
 	return 0;
 }
