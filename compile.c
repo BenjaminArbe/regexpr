@@ -79,7 +79,7 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 			
 			case '*':	
 				// If * is 1st char in REGEXP then it is a normal char
-				// * after ( or ) considered normal char
+				// * after ( or ) is considered as normal char
 				if ( lastep == 0 || *lastep == CBRA || *lastep == CKET )
 					goto defchar;
 				*lastep |= CSTAR;
