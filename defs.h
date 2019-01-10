@@ -10,16 +10,18 @@
 extern bool bcf;		// Used to detect ^
  
 enum { 
-	CSTAR = 1,	// * matches 0 or more chars
-	CBRA = 2,	// ( bracket
-	CCHR = 4,	// Normal character
-	CDOT = 8,	// dot matches any char
-	CCL = 12,	// Character classes [a-b]
-	NCCL = 16,	// Negated character classes [^a-b]
-	CDOL = 20,	// $ matches end of line
-	CEOF = 22,	// Used to signal end of compiled REXP
-	CKET = 24,	// ) bracket
-	CBACK = 36,	// / backslash
+	CCHR = 1,	// Normal character
+	CDOT = 2,	// dot matches any char
+	CCL  = 4,	// Character classes [a-b]
+	NCCL = 8,	// Negated character classes [^a-b]
+	CBACK = 10,	// / backslash
+
+	CSTAR = 32,	// * matches 0 or more chars
+	CEOF = 48,	// Used to signal end of compiled REXP
+	CRPT = 64,	// \{m,n\}
+	CKET = 80,	// ) bracket
+	CDOL = 96, // $ matches end of line
+	CBRA = 112,	// ( bracket
 };
 #endif
 

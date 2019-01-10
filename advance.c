@@ -26,8 +26,11 @@ extern "C" {
 #endif
 
 char *loc2, *locs;
+static int m, len;
+
 static bool stringchr(char *s, char c);
- 
+static void getrange(const char *s);
+
 int
 advance(const char *string, const char *expbuf) {
 	char *lp = (char *)string;
@@ -107,6 +110,20 @@ advance(const char *string, const char *expbuf) {
 					;
 				ep++;
 				goto star;
+			
+			case CCHR|CRPT: {
+				char c = *ep++;
+				getrange(ep);
+				while (m--)
+					if ( *lp++ != c ) return 0;
+				curlp = lp;
+				while (len--)
+					if ( *lp++ != c ) break;
+				if ( len < 0 ) lp++;	// when /{m/}
+				ep += 2;	// skip m and n
+				goto star;
+			}
+				
 				
 star:
 		do {
@@ -140,6 +157,11 @@ stringchr(char *s, char c) {
 	return false;
 }
 
+static void
+getrange(const char *s) {
+	m = *s++;
+	len = *s - m;
+}
 
 #ifdef __cplusplus
 }

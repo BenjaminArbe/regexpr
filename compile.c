@@ -23,6 +23,7 @@ static char *cbracketp;
 
 static int compile_groups(int);
 static int compile_char_class(char *);
+static int compile_rpt();
 
 char *
 compile ( const char *instring, char *expbuf, char *endbuf) {
@@ -72,7 +73,9 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 		
 		// Here is where we remember 'char tokens' and separate
 		// from repetition operators:
-		if ( c != '*' ) lastep = ep;
+		if ( c != '*' &&
+				( c != '\\' || *sp != '{' ) ) 
+			lastep = ep;
 		
 		switch (c) {
 			case '.':	*ep++ = CDOT; continue;
@@ -99,6 +102,12 @@ compile ( const char *instring, char *expbuf, char *endbuf) {
 				int ret = compile_groups(c);
 				if ( ret == 1 ) continue;
 				else if ( ret == -1 ) goto error;
+				
+				if ( c == '{' ) {
+					ret = compile_rpt();
+					if ( ret == 1 ) continue;
+					else if (ret == -1 ) goto error;
+				}
 				*ep++ = CCHR;
 				*ep++ = c;
 				continue;
@@ -182,6 +191,61 @@ compile_char_class(char *ebuf) {
 	lastep[1] = count;
 	return 1;
 }
+
+/* Function: compile_rpt
+ *   Do processing for REGEXP repetition operator
+ *	
+ * input: current processing char
+ * returns:
+ *		1 found a valid rep op \\{m, n\\}, \\{m,\\} or \\{m\}}
+ *		0 allow normal char processing no errors
+ *		-1 found an error, specified by regerrno 
+ */
+static int
+compile_rpt() {
+	int ncount = 0;	// Comma counter
+	// If { is 1st char in RE consider normal char
+	if ( lastep == NULL ) return 0;
+	*lastep |= CRPT;
+	char c;
+get_next_num:
+	c = *sp++;
+	int i = 0;
+	do {
+		if ( c >= '0' && c <= '9' )
+			i = 10 * i + c - '0';
+		else  {
+			regerrno = 16;	// Bad number
+			return -1;
+		}
+	} while (  (c = *sp++) != '\\' && c != ','  );
+	if ( i > ESIZE/2 ) { 
+		regerrno = 11;		// Range end point too large
+		return -1;
+	}
+	*ep++ = (char)i;
+	if ( c == ',' ) {
+		if ( ncount++ ) {
+			regerrno = 44;	// More than two numbers given in \{ \}
+			return -1;
+		}
+		if ( (c = *sp++) == '\\' )	// \{m,\}
+			*ep++ = (char)ESIZE/2;	
+		else { sp--; goto get_next_num; }
+	}
+	if ( *sp++ != '}' ) {
+		regerrno = 45;		/* } expected after \ */
+		return -1;
+	}
+	if ( ncount == 0 ) // /{m/}
+		*ep++ = (char)i;	// In case of one number write the same # again
+	else if ( ep[-1] < ep[-2] ) { // m must be less than n
+		regerrno = 46;		// 1st # exceeds the 2nd #
+		return -1;
+	}
+	return 1;
+}
+
 
 /* Function: compile_groups
  *   Do processing for REGEXP groups
