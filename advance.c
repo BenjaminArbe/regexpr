@@ -119,11 +119,20 @@ advance(const char *string, const char *expbuf) {
 				curlp = lp;
 				while (len--)
 					if ( *lp++ != c ) break;
-				if ( len < 0 ) lp++;	// when /{m/}
+				if ( len < 0 ) lp++;	
 				ep += 2;	// skip m and n
 				goto star;
 			}
-				
+			case CDOT|CRPT:
+				getrange(ep);
+				while (m--)
+					if ( *lp++ == '\0' ) return 0;
+				curlp = lp;
+				while (len--)
+					if ( *lp++ == '\0' ) break;
+				if ( len < 0 ) lp++;
+				ep += 2;
+				goto star;
 				
 star:
 		do {
