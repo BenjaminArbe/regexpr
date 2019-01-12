@@ -5,6 +5,7 @@
 #define _DEFS_H
 #include <stdbool.h>
 #define ESIZE	512		// Buffer size used by malloc
+#define MAXRPT	127		// max values for m and n in CRPT
 #define NCBRA	9
  
 extern bool bcf;		// Used to detect ^

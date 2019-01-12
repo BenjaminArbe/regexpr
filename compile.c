@@ -203,48 +203,57 @@ compile_char_class(char *ebuf) {
  */
 static int
 compile_rpt() {
-	int ncount = 0;	// Comma counter
+	bool bc = false;	// comma indicator
 	// If { is 1st char in RE consider normal char
 	if ( lastep == NULL ) return 0;
 	*lastep |= CRPT;
-	char c;
-get_next_num:
-	c = *sp++;
-	int i = 0;
-	do {
-		if ( c >= '0' && c <= '9' )
-			i = 10 * i + c - '0';
-		else  {
-			regerrno = 16;	// Bad number
-			return -1;
-		}
-	} while (  (c = *sp++) != '\\' && c != ','  );
-	if ( i > ESIZE/2 ) { 
-		regerrno = 11;		// Range end point too large
-		return -1;
-	}
-	*ep++ = (char)i;
-	if ( c == ',' ) {
-		if ( ncount++ ) {
-			regerrno = 44;	// More than two numbers given in \{ \}
-			return -1;
-		}
-		if ( (c = *sp++) == '\\' )	// \{m,\}
-			*ep++ = (char)ESIZE/2;	
-		else { sp--; goto get_next_num; }
-	}
+	int m = 0, n = MAXRPT;
+	char c = *sp++;
+	while ( c != '\\' ) {
+		switch ( c ) {
+			case ',':
+				if ( bc ) {
+					regerrno = 44; // More than two numbers given
+					return -1;
+				} else {
+					bc = true;
+					c = *sp++;
+				}
+				break;
+				
+			default: {
+				int i = 0;
+				do {
+					if ( c >= '0' && c <= '9' )
+						i = 10 * i + c - '0';
+					else {
+						regerrno = 16; // Bad number
+						return -1;
+					}
+				} while ( (c = *sp++ ) != '\\' && c != ',' );
+				if ( i > MAXRPT ) {
+					regerrno = 11; 	// Range end point too large
+					return -1;
+				}
+				if ( !bc )  m = i;
+				else n = i;
+			}
+		} // end of switch
+	} // end while
 	if ( *sp++ != '}' ) {
-		regerrno = 45;		/* } expected after \ */
+		regerrno = 45;	/* } expected after \ */
 		return -1;
 	}
-	if ( ncount == 0 ) // /{m/}
-		*ep++ = (char)i;	// In case of one number write the same # again
-	else if ( ep[-1] < ep[-2] ) { // m must be less than n
-		regerrno = 46;		// 1st # exceeds the 2nd #
+	if ( !bc ) // In case of one number //{m//} write n = m
+		n = m;
+	if ( n < m ) {
+		regerrno = 46;	// 1st exceeds the 2nd #
 		return -1;
 	}
+	*ep++ = m;
+	*ep++ = n;
 	return 1;
-}
+} // end of compile_rpt()
 
 
 /* Function: compile_groups
