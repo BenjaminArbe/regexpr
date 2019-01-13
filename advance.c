@@ -133,6 +133,23 @@ advance(const char *string, const char *expbuf) {
 				if ( len < 0 ) lp++;
 				ep += 2;
 				goto star;
+			case CBACK|CRPT: {
+				char *sp = braslist[(int)*ep];
+				int count = braelist[(int)*ep++] - sp;
+				getrange(ep);
+				while (m--) {
+					if ( strncmp(sp, lp, count) != 0 ) return 0;
+					lp += count;
+				}
+				curlp = lp;
+				while (len--) {
+					if ( strncmp(sp, lp, count) != 0 ) break;
+					lp += count;
+				}
+				if ( len < 0) lp++;
+				ep += 2;
+				goto star;
+			}
 				
 star:
 		do {
