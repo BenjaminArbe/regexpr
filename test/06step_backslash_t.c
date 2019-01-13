@@ -65,13 +65,14 @@ step_backslash_multiple() {
 }
 
 char *
-step_backslash_multiple_1() {
+step_backslash_star_1() {
 	char *p = compile("\\(uv\\)\\(012\\).*\\1*\\2", 0, 0);
 	mu_assert(p != 0, "Failure compiling RE");
 	char s[] = "abcuv012vvvfguvuvuv012mnopq";
 	int r = step(s, p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(*loc1 == 'u', "loc1 didn't match");
+	mu_assert(strncmp(loc1,"uv012vvvfguvuvuv012",loc2-loc1)==0,"wrong match");
 	mu_assert(*loc2 == 'm', "loc2 didn't match");
 	mu_assert(*braslist[0] == 'u', "starting of substring 0 didn't match");
 	mu_assert(*braelist[0] == '0', "ending of substring 0 didn't match");
@@ -83,13 +84,14 @@ step_backslash_multiple_1() {
 }
 
 char *
-step_backslash_multiple_2() {
+step_backslash_star_2() {
 	char *p = compile("\\(uv\\)\\(012\\).*\\1*\\2", 0, 0);
 	mu_assert(p != 0, "Failure compiling RE");
 	char s[] = "abcuv012vvvfg012mnopq";
 	int r = step(s, p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(*loc1 == 'u', "loc1 didn't match");
+	mu_assert(strncmp(loc1,"uv012vvvfg012",loc2-loc1)==0, "wrong match");
 	mu_assert(*loc2 == 'm', "loc2 didn't match");
 	mu_assert(*braslist[0] == 'u', "starting of substring 0 didn't match");
 	mu_assert(*braelist[0] == '0', "ending of substring 0 didn't match");
@@ -101,13 +103,14 @@ step_backslash_multiple_2() {
 }
 
 char *
-step_backslash_multiple_3() {
+step_backslash_star_3() {
 	char *p = compile("\\(uv\\)\\(012\\).*\\1*\\1\\2", 0, 0);
 	mu_assert(p != 0, "Failure compiling RE");
 	char s[] = "abcuv012vvvfguvuvuv012mnopq";
 	int r = step(s, p);
 	mu_assert(r == 1, "Failure matching RE");
 	mu_assert(*loc1 == 'u', "loc1 didn't match");
+	mu_assert(strncmp(loc1,"uv012vvvfguvuvuv012",loc2-loc1)==0, "wrong match");
 	mu_assert(*loc2 == 'm', "loc2 didn't match");
 	mu_assert(*braslist[0] == 'u', "starting of substring 0 didn't match");
 	mu_assert(*braelist[0] == '0', "ending of substring 0 didn't match");
@@ -162,9 +165,9 @@ all_tests() {
 	mu_run_test(step_backslash_1);
 	mu_run_test(step_backslash_2);
 	mu_run_test(step_backslash_multiple);
-	mu_run_test(step_backslash_multiple_1);
-	mu_run_test(step_backslash_multiple_2);
-	mu_run_test(step_backslash_multiple_3);
+	mu_run_test(step_backslash_star_1);
+	mu_run_test(step_backslash_star_2);
+	mu_run_test(step_backslash_star_3);
 	mu_run_test(step_backslash_nested);
 	mu_run_test(step_backslash_nested_1);
 	
