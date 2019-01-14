@@ -28,11 +28,26 @@ rpt_back_one_parameter() {
 }
 
 char *
+rpt_back_one_comma_parameter() {
+	char *p = compile("\\(ab\\)XX*\\1\\{3,\\}",0, 0);
+	mu_assert(p != 0, "Failure compiling RE");
+	char s[] = "abXXababXXabababXccczaabccccuababdc";
+	int r = step(s, p);
+	mu_assert(r == 1, "Failure matching RE");
+	mu_assert(strncmp(loc1, "abXXabababXccczaabcccuababdc", loc2-loc1) == 0,"wrong match");
+	printf("%d\n", loc2-loc1);
+	mu_assert(*loc2 == 'X', "wrong loc2 value");
+	
+	if (p) free(p);
+	return 0;
+}
+
+char *
 all_tests() {
 	mu_suite_start();
 	
 	mu_run_test(rpt_back_one_parameter);
-	//mu_run_test(rpt_back_one_comma_parameter);
+	mu_run_test(rpt_back_one_comma_parameter);
 	//mu_run_test(rpt_back_comma_one_parameter);
 	//mu_run_test(rpt_back_two_parameter);
 	
