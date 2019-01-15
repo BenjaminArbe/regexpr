@@ -146,7 +146,7 @@ advance(const char *string, const char *expbuf) {
 					if ( strncmp(sp, lp, count) != 0 ) break;
 					lp += count;
 				}
-				if ( len < 0) lp++;
+				lp++;
 				ep += 2;
 				goto star;
 			}
