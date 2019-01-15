@@ -138,7 +138,8 @@ error:
 
 /* Function: compile_char_class
  * 	Do processing of character class groups
- *
+ *	Format:
+ *		[CCL/NCCL][count][count class chars]
  * returns:
  * 	1 means successfully compiled so ready to continue 
  *			compilation
