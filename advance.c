@@ -37,6 +37,7 @@ advance(const char *string, const char *expbuf) {
 	char *lpmax = lp + strlen(lp);
 	char *ep = (char *)expbuf;
 	char *curlp;
+	bool bccl = true;
 	loc2 = 0; locs = 0;
 
 	while (true)  {
@@ -147,6 +148,31 @@ advance(const char *string, const char *expbuf) {
 					lp += count;
 				}
 				lp++;
+				ep += 2;
+				goto star;
+			}
+			case NCCL|CRPT:
+				bccl = false;
+			case CCL|CRPT: {
+				char *ccp = ep;
+				ep += *ep + 1;
+				getrange(ep);
+				while (m--) {
+					if ( bccl ) {
+						if ( !stringchr(ccp, *lp++) ) return 0;
+					} else {
+						if ( stringchr(ccp, *lp++) ) return 0;
+					}
+				}
+				curlp = lp;
+				while (len--) {
+					if ( bccl ) {
+						if ( !stringchr(ccp, *lp++) ) break;
+					} else {
+						if ( stringchr(ccp, *lp++) ) break;
+					}
+				}
+				if ( len < 0 ) lp++;
 				ep += 2;
 				goto star;
 			}
