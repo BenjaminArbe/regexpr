@@ -153,6 +153,7 @@ advance(const char *string, const char *expbuf) {
 			}
 			case NCCL|CRPT:
 				bccl = false;
+			// fall through
 			case CCL|CRPT: {
 				char *ccp = ep;
 				ep += *ep + 1;
