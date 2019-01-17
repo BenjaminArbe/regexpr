@@ -12,6 +12,8 @@ TST=$(patsubst %.c,%,$(TSTSRC))
 LIB:=libgen.a
 LDLIBS=
 
+INSTALL_DIR=/usr/local
+
 all:	$(LIB) test
 
 $(LIB): $(OBJ)
@@ -30,6 +32,10 @@ valgrind:
 clean:
 	rm -rf *.a *.o
 	rm -f test/*_t test/test.log
+
+install: $(LIB)
+	install -m 644 -o root regexpr.h $(INSTALL_DIR)/include
+	install -m 755 -o root libgen.a $(INSTALL_DIR)/lib
 	
 	
 
